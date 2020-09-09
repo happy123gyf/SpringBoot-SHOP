@@ -1,0 +1,31 @@
+ String manager_url = "http://localhost:8899/manager-ms/"
+
+
+ Error:Internal error: (java.lang.IllegalStateException) Duplicate key org.jetbrains.jps.model.module.impl.JpsModuleImpl@568bf312
+ java.lang.IllegalStateException: Duplicate key org.jetbrains.jps.model.module.impl.JpsModuleImpl@568bf312
+ 	at java.util.stream.Collectors.lambda$throwingMerger$0(Collectors.java:133)
+ 	at java.util.HashMap.merge(HashMap.java:1254)
+ 	at java.util.stream.Collectors.lambda$toMap$58(Collectors.java:1320)
+ 	at java.util.stream.ReduceOps$3ReducingSink.accept(ReduceOps.java:169)
+ 	at java.util.Iterator.forEachRemaining(Iterator.java:116)
+ 	at java.util.Spliterators$IteratorSpliterator.forEachRemaining(Spliterators.java:1801)
+ 	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:481)
+ 	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:471)
+ 	at java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:708)
+ 	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+ 	at java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:499)
+ 	at org.jetbrains.jps.maven.model.impl.MavenAnnotationProcessorTargetType.createLoader(MavenAnnotationProcessorTargetType.java:50)
+ 	at org.jetbrains.jps.incremental.storage.BuildTargetTypeState.load(BuildTargetTypeState.java:63)
+ 	at org.jetbrains.jps.incremental.storage.BuildTargetTypeState.<init>(BuildTargetTypeState.java:52)
+ 	at org.jetbrains.jps.incremental.storage.BuildTargetsState.getTypeState(BuildTargetsState.java:122)
+ 	at org.jetbrains.jps.incremental.storage.BuildTargetsState.getAverageBuildTime(BuildTargetsState.java:116)
+ 	at org.jetbrains.jps.incremental.messages.BuildProgress.<init>(BuildProgress.java:73)
+ 	at org.jetbrains.jps.incremental.IncProjectBuilder.runBuild(IncProjectBuilder.java:438)
+ 	at org.jetbrains.jps.incremental.IncProjectBuilder.build(IncProjectBuilder.java:190)
+ 	at org.jetbrains.jps.cmdline.BuildRunner.runBuild(BuildRunner.java:138)
+ 	at org.jetbrains.jps.cmdline.BuildSession.runBuild(BuildSession.java:297)
+ 	at org.jetbrains.jps.cmdline.BuildSession.run(BuildSession.java:130)
+ 	at org.jetbrains.jps.cmdline.BuildMain$MyMessageHandler.lambda$channelRead0$0(BuildMain.java:218)
+ 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+ 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+ 	at java.lang.Thread.run(Thread.java:748)

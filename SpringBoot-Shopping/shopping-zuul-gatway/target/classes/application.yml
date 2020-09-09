@@ -1,0 +1,26 @@
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+server:
+  port: 8899
+spring:
+  application:
+    name: shopping-zuul-gatway
+zuul:
+  routes:
+    manager-ms:
+      path: /manager-ms/**
+      service-id: shopping-manager-ms
+    content-ms:
+      path: /content-ms/**
+      service-id: shopping-content-ms
+    search-ms:
+      path: /search-ms/**
+      service-id: shopping-search-ms
+    page-ms:
+      path: /page-ms/**
+      service-id: shopping-page-ms
+
+
+
