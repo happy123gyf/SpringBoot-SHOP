@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>品牌管理</title>
+		<meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+		<link rel="stylesheet" href="../plugins/bootstrap/css/bootstrap.min.css">
+		<link rel="stylesheet" href="../plugins/adminLTE/css/AdminLTE.css">
+		<link rel="stylesheet" href="../plugins/adminLTE/css/skins/_all-skins.min.css">
+		<link rel="stylesheet" href="../css/style.css">
+		<script src="../plugins/jQuery/jquery-2.2.3.min.js"></script>
+		<script src="../plugins/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="../plugins/angularjs/angular.min.js"></script>
+		<script type="text/javascript" src="../plugins/angularjs/pagination.js"></script>
+
+		<script type="text/javascript">
+			var manager_url = 'http://localhost:8899/manager-ms/';
+
+			var app = angular.module('manager_app', ['pagination']);
+			app.controller('manager_controller', function($scope, $http) {
+
+				//初始化查询所有品牌
+				$scope.loadBrand = function() {
+
+					$http.get(manager_url + 'queryAllBrand').success(function(response) {
+						$scope.brandList = response;
+					})
+
+				};
+
+				//新增或更新品牌
+				$scope.save = function() {
+					var methodName = "createBrand";
+					if($scope.entity.id != null) {
+						methodName = "updateBrand";
+					}
+
+					$http.post(manager_url + methodName, $scope.entity).success(function(response) {
+						if(response.code == 200) {
+							$scope.loadBrand();
+						} else {
+							alert(response.message);
+						}
+
+					})
+
+				};
+				
+				//全选复选框
+				$scope.allClick = function(event){
+					if(event.target.checked == true){
+					   
+					}
+					
+				}
+				
+
+				//判断checkbox的事件
+				$scope.selectIds = [];
+				$scope.updatselection = function(event, brand_id) {
+					if(event.target.checked == true) {
+						$scope.selectIds.push(brand_id);
+					} else {
+						var index = $scope.selectIds.indexOf(brand_id);
+						$scope.selectIds.splice(index, 1);
+					}
+
+				}
+
+				//批量删除数组
+				$scope.delete = function() {
+					if(confirm("确定要批量删除吗?")) {
+						$http.get(manager_url + "deleteManyBrand?ids=" + $scope.selectIds).success(function(response) {
+							if(response.code == 200) {
+								alert("批量删除成功!")
+								$scope.loadBrand();
+							} else {
+								alert(response.message);
+							}
+
+						})
+					}
+
+				} 
+				
+				
+				
+				//根据id查找品牌
+				$scope.findOneBrand = function(brand_id) {
+					$http.get(manager_url + "queryBrandById/" + brand_id).success(function(response) {
+						$scope.entity = response;
+
+					})
+
+				};
+				
+				
+
+				//分页控件配置currentPage:当前页   totalItems :总记录数  itemsPerPage:每页记录数  perPageOptions :分页选项  onChange:当页码变更后自动触发的方法 ,并且首次加载也会触发
+				$scope.paginationConf = {
+					currentPage: 1,
+					totalItems: 15,
+					itemsPerPage: 10,
+					perPageOptions: [5, 10, 20, 30, 40, 50],
+					onChange: function() {
+						$scope.reloadList();
+					}
+				};
+
+				$scope.reloadList = function() {
+					$scope.findByPage($scope.paginationConf.currentPage, $scope.paginationConf.itemsPerPage);
+				}
+				$scope.findByPage = function(pageNum, pageSize) {
+					$http.get(manager_url + 'findByPage?pageNum=' + pageNum + '&pageSize=' + pageSize).success(function(response) {
+						$scope.brandList = response.rows;
+						$scope.paginationConf.totalItems = response.total;
+
+					})
+				}
+
+			}) //app.controller结束
+		</script>
+
+	</head>
+
+	<body class="hold-transition skin-red sidebar-mini" ng-app="manager_app" ng-controller="manager_controller" ng-init="loadBrand()">
+		<!-- .box-body -->
+		<div class="box-header with-border">
+			<h3 class="box-title">品牌管理</h3>
+		</div>
+
+		<div class="box-body">
+
+			<!-- 数据表格 -->
+			<div class="table-box">
+
+				<!--工具栏-->
+				<div class="pull-left">
+					<div class="form-group form-inline">
+						<div class="btn-group">
+							<button type="button" class="btn btn-default" title="新建" data-toggle="modal" data-target="#editModal" ng-click="entity={}"><i class="fa fa-file-o"></i> 新建</button>
+							<button type="button" class="btn btn-default" title="删除" ng-click="delete()"><i class="fa fa-trash-o"></i> 删除</button>
+							<button type="button" class="btn btn-default" title="刷新" onclick="window.location.reload();"><i class="fa fa-refresh"></i> 刷新</button>
+						</div>
+					</div>
+				</div>
+				<div class="box-tools pull-right">
+					<div class="has-feedback">
+
+					</div>
+				</div>
+				<!--工具栏/-->
+
+				<!--数据列表-->
+				<table id="dataList" class="table table-bordered table-striped table-hover dataTable">
+					<thead>
+						<tr>
+							<th class="" style="padding-right:0px">
+								<input id="selall" type="checkbox" class="icheckbox_square-blue" ng-click="allClick($event)">
+							</th>
+							<th class="sorting_asc">品牌ID</th>
+							<th class="sorting">品牌名称</th>
+							<th class="sorting">品牌首字母</th>
+							<th class="text-center">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="brand in brandList">
+							<td><input type="checkbox" ng-click="updatselection($event,brand.id)"></td>
+							<td>{{brand.id}}</td>
+							<td>{{brand.name}}</td>
+							<td>{{brand.firstChar}}</td>
+							<td class="text-center">
+								<button type="button" class="btn bg-olive btn-xs" data-toggle="modal" data-target="#editModal" ng-click="findOneBrand(brand.id)">修改</button>
+							</td>
+						</tr>
+
+					</tbody>
+				</table>
+				<!--数据列表/-->
+				<!--分页模块-->
+				<tm-pagination conf="paginationConf"></tm-pagination>
+			</div>
+			<!-- 数据表格 /-->
+
+		</div>
+		<!-- /.box-body -->
+
+		<!-- 编辑窗口 -->
+		<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+						<h3 id="myModalLabel">品牌编辑</h3>
+					</div>
+					<div class="modal-body">
+						<table class="table table-bordered table-striped" width="800px">
+							<tr>
+								<td>品牌名称</td>
+								<td><input class="form-control" placeholder="品牌名称" ng-model="entity.name"> </td>
+							</tr>
+							<tr>
+								<td>首字母</td>
+								<td><input class="form-control" placeholder="首字母" ng-model="entity.firstChar"> </td>
+							</tr>
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-success" data-dismiss="modal" aria-hidden="true" ng-click="save()">保存</button>
+						<button class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</body>
+
+</html>
